@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People × AI — Capability Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#101010;--bg2:#141414;--bg3:#1a1a1a;--bg-card:#1f1f1f;
+  --green:#97CA6F;--green-dark:#0D3310;--green-dim:rgba(151,202,111,0.08);
+  --white:#fff;--muted:rgba(255,255,255,0.55);--border:rgba(151,202,111,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll;overflow-x:hidden;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Roboto',Arial,sans-serif}
+section{height:100vh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:100px clamp(24px,8vw,120px) 60px}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;width:100%;z-index:900;padding:20px clamp(24px,8vw,120px);background:rgba(16,16,16,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(151,202,111,0.1);display:flex;align-items:center;justify-content:space-between}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:var(--muted);font-size:13px;text-decoration:none;font-weight:400;transition:color .2s;letter-spacing:.5px}
+.nav-links a:hover,.nav-links a.active{color:var(--green)}
+#counter{position:fixed;bottom:28px;right:clamp(24px,6vw,80px);font-size:10px;letter-spacing:.18em;color:rgba(255,255,255,.35);z-index:900;font-weight:300}
+
+/* DOT NAV */
+#dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:900;display:flex;flex-direction:column;gap:10px}
+.dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:background .3s,height .3s,border-radius .3s}
+.dot.active{background:var(--green);height:22px;border-radius:2px}
+
+/* TYPE */
+h1{font-size:clamp(44px,6vw,78px);font-weight:200;line-height:1.0}
+h2{font-size:clamp(28px,3.5vw,48px);font-weight:200;line-height:1.1}
+h3{font-size:clamp(16px,1.8vw,20px);font-weight:700;color:var(--green)}
+p{font-size:16px;font-weight:300;line-height:1.7;color:rgba(255,255,255,.8)}
+.eyebrow{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:22px}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--green);flex-shrink:0}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:rgba(151,202,111,.08);border:1px solid rgba(151,202,111,.2);border-radius:100px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:32px}
+.mono{font-family:monospace;font-size:11px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:500}
+
+/* CARDS */
+.cards{display:grid;gap:16px}
+.cards-2{grid-template-columns:repeat(2,1fr)}
+.cards-4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);padding:24px;border-left:2px solid var(--green);position:relative}
+.card-num{font-size:52px;font-weight:900;color:rgba(151,202,111,.05);line-height:1;position:absolute;top:16px;right:18px;user-select:none}
+.card h3{margin-bottom:10px;font-size:15px}
+.card p{font-size:13px;color:var(--muted)}
+
+/* STATS */
+.stats{display:grid;gap:2px}
+.stats-3{grid-template-columns:repeat(3,1fr)}
+.stats-4{grid-template-columns:repeat(4,1fr)}
+.stat{background:var(--bg3);padding:32px 28px}
+.stat-n{font-size:clamp(38px,5vw,62px);font-weight:200;color:var(--green);line-height:1}
+.stat-l{font-size:13px;color:var(--muted);margin-top:8px;font-weight:300}
+
+/* LAYERS */
+.layers{display:flex;gap:0;width:100%}
+.layer{flex:1;padding:28px 22px;background:var(--bg3);border-left:1px solid rgba(151,202,111,.1);position:relative}
+.layer:first-child{border-left:none}
+.layer-arrow{position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:10px;color:rgba(151,202,111,.4);z-index:2;font-weight:700}
+.layer-n{font-size:11px;font-weight:700;color:var(--green);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.layer h3{font-size:16px;color:var(--white);font-weight:500;margin-bottom:8px}
+.layer p{font-size:12px;color:var(--muted);line-height:1.6}
+.layer-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.pill{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;background:rgba(151,202,111,.08);color:rgba(151,202,111,.8)}
+
+/* TIMELINE */
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.tblock{background:var(--bg3);padding:28px 24px}
+.tblock-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(151,202,111,.15)}
+.tblock-item{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;font-weight:300;color:rgba(255,255,255,.75);line-height:1.5}
+.tblock-item:last-child{border-bottom:none}
+.tblock-item strong{color:var(--white);font-weight:500;display:block;margin-bottom:2px}
+
+/* SPLIT */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.split-sm{grid-template-columns:55fr 45fr}
+
+/* PRINCIPLES */
+.principle{padding:28px 0;border-bottom:1px solid rgba(151,202,111,.12);display:flex;gap:24px;align-items:flex-start}
+.principle:last-child{border-bottom:none}
+.p-num{font-size:11px;font-weight:700;color:var(--green);letter-spacing:2px;flex-shrink:0;margin-top:4px;font-family:monospace}
+.p-title{font-size:17px;font-weight:300;color:var(--white);margin-bottom:6px}
+.p-body{font-size:14px;font-weight:300;color:var(--muted);line-height:1.6}
+
+/* HERO GLOW */
+.glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(151,202,111,.06) 0%,transparent 65%);right:-80px;top:50%;transform:translateY(-50%);pointer-events:none}
+.glow-center{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(151,202,111,.05) 0%,transparent 65%);left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+
+/* GRID BG */
+.grid-bg{background-image:linear-gradient(rgba(151,202,111,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(151,202,111,.025) 1px,transparent 1px);background-size:56px 56px}
+
+/* CALLOUT */
+.callout{padding:18px 24px;border-left:2px solid var(--green);background:rgba(151,202,111,.05);font-size:14px;font-weight:300;color:rgba(255,255,255,.85);line-height:1.6;margin-top:24px}
+.callout strong{color:var(--green);font-weight:500}
+
+/* MODES */
+.modes{display:flex;gap:2px}
+.mode{flex:1;padding:22px 20px;background:var(--bg3)}
+.mode-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:10px}
+.mode h3{font-size:15px;font-weight:500;color:var(--white);margin-bottom:8px}
+.mode p{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ANIMATE */
+.ani{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
+.ani.in{opacity:1;transform:translateY(0)}
+
+/* CTA */
+.btn-primary{display:inline-block;padding:14px 36px;background:var(--green);color:#101010;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;text-decoration:none;transition:background .2s,opacity .2s;margin-top:8px}
+.btn-primary:hover{background:#acd883}
+.btn-sec{display:inline-block;padding:14px 32px;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:1px;text-decoration:none;margin-top:8px;transition:all .2s}
+.btn-sec:hover{background:rgba(151,202,111,.1)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div id="nav">
+  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTY4IiBoZWlnaHQ9IjIxIiB2aWV3Qm94PSIwIDAgMTY4IDIxIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik0xMjQuMzI4IDIwLjg0MDFDMTI0LjMyOCAxOS4zNTE2IDEyNC4zMjggMTcuODUxNiAxMjQuMzI4IDE2LjM2M0MxMjQuMzI4IDExLjE4NzUgMTI0LjMyOCA2LjAxMTg5IDEyNC4zMjggMC44MzYzMTRWMC4yOTgxNDZDMTI1LjE2NCAwLjI5ODE0NiAxMjUuOTU0IDAuMzU1Mzk4IDEyNi43NDQgMC4yODY2OTZDMTI3LjUgMC4yMTc5OTMgMTI3Ljk0NiAwLjQ5MjgwMiAxMjguNDA0IDEuMDg4MjJDMTMxLjk2NiA1LjcwMjczIDEzNS41NzIgMTAuMjk0MyAxMzkuMTY4IDE0Ljg5NzRDMTM5LjI1OSAxNS4wMTE5IDEzOS4zNjIgMTUuMTM3OCAxMzkuNTIzIDE1LjMzMjVWMC4zMjEwNDdIMTQyLjg3OEMxNDIuODc4IDAuNDI0MSAxNDIuOTEyIDAuNTM4NjA0IDE0Mi45MTIgMC42NDE2NTdDMTQyLjkxMiA3LjI5NDMzIDE0Mi45MTIgMTMuOTQ3IDE0Mi45MTIgMjAuNTk5N0MxNDIuOTEyIDIwLjY3OTggMTQyLjkxMiAyMC43NzE0IDE0Mi45MTIgMjAuODUxNkMxNDEuNzY3IDIwLjg1MTYgMTQwLjYxMSAyMC44NTE2IDEzOS40NjYgMjAuODUxNkMxMzkuNDIgMjAuNzgyOSAxMzkuMzk3IDIwLjcwMjcgMTM5LjM0IDIwLjY0NTVDMTM1LjU1IDE1Ljc5MDUgMTMxLjc1OSAxMC45NDcgMTI3Ljk2OSA2LjEwMzQ5QzEyNy45MDEgNi4wMjMzNCAxMjcuODMyIDUuOTU0NjQgMTI3LjcwNiA1LjgwNTc4VjIwLjg2M0gxMjQuMzUxTDEyNC4zMjggMjAuODQwMVoiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNMjUuNjI1IDIwLjgzOTNDMjUuOTY4NSAyMC4wMzc4IDI2LjMxMiAxOS4yMjQ4IDI2LjY2NyAxOC40MjMzQzI5LjI4OTEgMTIuNTE0OSAzMS45MjI3IDYuNjE3OTMgMzQuNTQ0OCAwLjcwOTUzM0MzNC42ODIzIDAuNDAwMzcyIDM0Ljg0MjYgMC4yNzQ0MTggMzUuMTk3NSAwLjI4NTg2OUMzNi4wNjc3IDAuMzA4NzY5IDM2LjkzOCAwLjI5NzMxOSAzNy43OTY4IDAuMjg1ODY5QzM4LjA0ODcgMC4yODU4NjkgMzguMTk3NSAwLjM0MzEyIDM4LjMxMiAwLjU5NTAyOUM0MS4yNjYyIDcuMjU5MTUgNDQuMjMxOSAxMy45MTE4IDQ3LjE5NzUgMjAuNTY0NUM0Ny4yMzE5IDIwLjY1NjEgNDcuMjY2MiAyMC43NDc3IDQ3LjMwMDYgMjAuODM5M0g0My42MDIxQzQzLjU0NDggMjAuNzEzMyA0My40NzYxIDIwLjU4NzQgNDMuNDMwMyAyMC40NjE0QzQxLjE4NjEgMTUuNDM0NyAzOC45NTMyIDEwLjQwOCAzNi43MDkgNS4zODEyOUMzNi42NDAzIDUuMjIwOTggMzYuNTYwMSA1LjA3MjEzIDM2LjQ0NTYgNC44MzE2N0MzNS4wOTQ1IDcuODY2MDIgMzMuNzg5MSAxMC44MDg4IDMyLjQ0OTQgMTMuNzk3M0gzMi45MzAzQzM0LjE2NyAxMy43OTczIDM1LjM5MjIgMTMuNzk3MyAzNi42Mjg4IDEzLjc5NzNDMzYuODkyMiAxMy43OTczIDM3LjAyOTYgMTMuODY2IDM3LjEzMjYgMTQuMTE3OUMzNy41MTA1IDE0Ljk5OTYgMzcuOTExMyAxNS44ODEzIDM4LjMwMDYgMTYuNzUxNUMzOC4zNDY0IDE2Ljg2NiAzOC4zODA3IDE2Ljk4MDUgMzguNDM4IDE3LjE0MDhDMzguMjMxOSAxNy4xNDA4IDM4LjA4MyAxNy4xNDA4IDM3LjkzNDIgMTcuMTQwOEMzNS43MzU3IDE3LjE0MDggMzMuNTM3MiAxNy4xNDA4IDMxLjMzODcgMTcuMTQwOEMzMS4wNjM5IDE3LjE0MDggMzAuOTI2NSAxNy4yMjEgMzAuODEyIDE3LjQ4NDNDMzAuMzMxMSAxOC42MDY1IDI5LjgyNzMgMTkuNzI4NiAyOS4zMjM1IDIwLjgzOTNIMjUuNjI1WiIgZmlsbD0iI0ZGRkZGRiIvPjxwYXRoIGQ9Ik0wIDkuNDU4NTZDMC4xMTQ1MDQgOC45MDg5NCAwLjE5NDY1NiA4LjM1OTMyIDAuMzMyMDYxIDcuODIxMTZDMi4yNTU3MyAwLjIyOTU1MyAxMS43MDIzIC0yLjU3NTc5IDE3LjQ3MzMgMi43MzcxOUMxNy41NzYzIDIuODI4NzkgMTcuNjkwOCAyLjkwODk0IDE3Ljc5MzkgMi45ODkxQzE2Ljk1OCAzLjgxMzUyIDE2LjE1NjUgNC41OTIxNSAxNS4zMzIxIDUuMzkzNjhDMTMuNzI5IDMuODgyMjIgMTEuNzU5NSAzLjE4Mzc1IDkuNDkyMzcgMy40NzAwMUM3LjY2MDMxIDMuNjk5MDIgNi4xNjAzMSA0LjU2OTI1IDQuOTkyMzcgNS45ODkxQzIuNzAyMjkgOC43ODI5OSAyLjkxOTg1IDEyLjgwMjEgNS40Mzg5MyAxNS4zNjdDNy45NDY1NyAxNy45MDg5IDEyLjMzMjEgMTguMzMyNiAxNS4zNDM1IDE1LjQ1ODZDMTYuMTMzNiAxNi4yMzcyIDE2LjkyMzcgMTcuMDE1OCAxNy43OTM5IDE3Ljg3NDZDMTcuNjY3OSAxNy45Nzc2IDE3LjQ5NjIgMTguMDkyMSAxNy4zNDczIDE4LjIyOTZDMTUuNjk4NSAxOS42NjA5IDEzLjc5NzcgMjAuNTMxMSAxMS42MjIxIDIwLjc4M0MxMS41MzA1IDIwLjc4MyAxMS40Mzg5IDIwLjgyODggMTEuMzM1OSAyMC44NTE3SDkuNDkyMzdDOS40MDA3NiAyMC44Mjg4IDkuMzA5MTYgMjAuNzk0NCA5LjIxNzU2IDIwLjc4M0M0Ljg3Nzg2IDIwLjI1NjMgMS4zNzQwNSAxNy4xNzYxIDAuMzIwNjExIDEyLjk1MDlDMC4xOTQ2NTYgMTIuNDM1NyAwLjExNDUwNCAxMS45MjA0IDAuMDExNDUwNCAxMS40MDUxQzAuMDExNDUwNCAxMC43NjM5IDAuMDExNDUwNCAxMC4xMjI3IDAuMDExNDUwNCA5LjQ4MTQ2TDAgOS40NTg1NloiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNNTguNDY1NiAyMC44Mzk4QzU4LjQ0MjcgMjAuNjc5NSA1OC40MDg0IDIwLjUxOTIgNTguNDA4NCAyMC4zNDc1QzU4LjQwODQgMTguNjY0MyA1OC40MDg0IDE2Ljk2OTYgNTguNDA4NCAxNS4yODY0QzU4LjQwODQgMTUuMDU3NCA1OC4zNTExIDE0LjgxNjkgNTguMjU5NSAxNC42MTA4QzU2LjIyMTQgMTAuMDE5MiA1NC4xNzE3IDUuNDE2MTcgNTIuMTIyMSAwLjgyNDU2OUM1Mi4wNTM0IDAuNjc1NzE0IDUxLjk5NjIgMC41MTU0MDkgNTEuOTE2IDAuMzIwNzUyQzUyLjA4NzggMC4zMjA3NTIgNTIuMjEzNyAwLjI5Nzg1MiA1Mi4zNTExIDAuMjk3ODUyQzUzLjMwMTUgMC4yOTc4NTIgNTQuMjUxOSAwLjMwOTMwMiA1NS4yMDIzIDAuMjk3ODUyQzU1LjUxMTQgMC4yOTc4NTIgNTUuNjcxNyAwLjQwMDkwNSA1NS43OTc3IDAuNjg3MTY1QzU3LjE2MDMgMy43NjczMiA1OC41MzQzIDYuODQ3NDcgNTkuOTA4NCA5LjkyNzYyQzU5Ljk2NTYgMTAuMDY1IDYwLjAzNDMgMTAuMjAyNCA2MC4xMjU5IDEwLjM5NzFDNjAuMjA2MSAxMC4yMTM5IDYwLjI3NDggMTAuMDg3OSA2MC4zMzIgOS45NTA1MkM2MS43MDYxIDYuODcwMzcgNjMuMDgwMSAzLjc5MDIyIDY0LjQ0MjcgMC43MTAwNjVDNjQuNTgwMSAwLjQxMjM1NSA2NC43MjkgMC4yOTc4NTIgNjUuMDYxMSAwLjMwOTMwMkM2NiAwLjMzMjIwMyA2Ni45Mzg5IDAuMzA5MzAyIDY3Ljg3NzggMC4zMDkzMDJDNjguMDE1MyAwLjMwOTMwMiA2OC4xNDEyIDAuMzA5MzAyIDY4LjM0NzMgMC4zMDkzMDJDNjguMTUyNyAwLjc0NDQxNiA2Ny45OTI0IDEuMTEwODMgNjcuODMyIDEuNDc3MjRDNjUuODg1NSA1Ljg1MTI5IDYzLjkyNzUgMTAuMjM2OCA2MS45OTI0IDE0LjYxMDhDNjEuODg5MyAxNC44Mjg0IDYxLjg0MzUgMTUuMDkxNyA2MS44MzIgMTUuMzMyMkM2MS44MzIgMTcuMTc1NyA2MS44MzIgMTkuMDA3OCA2MS44MzIgMjAuODUxM0g1OC40NzcxTDU4LjQ2NTYgMjAuODM5OFoiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNMTU4LjUyIDIwLjgzOTdDMTU4LjUyIDE3LjgxNjggMTU4LjUyIDE0Ljc5MzkgMTU4LjUyIDExLjc1OTVDMTU4LjUyIDkuMjQwNDMgMTU4LjUyIDYuNzA5ODkgMTU4LjUyIDQuMTkwODFDMTU4LjUyIDQuMDQxOTUgMTU4LjUyIDMuODkzMSAxNTguNTIgMy42ODY5OUgxNTIuNDM5VjAuMzMyMDMxSDE2OC4wMDFWMy42NzU1NEgxNjEuOTA5VjQuMjQ4MDZDMTYxLjkwOSA5LjU4Mzk0IDE2MS45MDkgMTQuOTMxMyAxNjEuOTA5IDIwLjI2NzFDMTYxLjkwOSAyMC40NjE4IDE2MS44OTcgMjAuNjU2NSAxNjEuODg2IDIwLjg1MTFIMTU4LjUzMUwxNTguNTIgMjAuODM5N1oiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNNzcuMTE4MSAyMC44Mzk0Qzc3LjA5NTIgMjAuNjc5MSA3Ny4wNzIzIDIwLjUwNzMgNzcuMDcyMyAyMC4zNDdDNzcuMDcyMyAxMy44MzE4IDc3LjA3MjMgNy4zMTY1IDc3LjA3MjMgMC44MDEyMjhWMC4zMjAzMTJIODAuNDUwMVYxNy40MTU3SDkwLjMwODlWMjAuODUwOEg3Ny4xMTgxVjIwLjgzOTRaIiBmaWxsPSIjRkZGRkZGIi8+PHBhdGggZD0iTTk5Ljc0MzYgMy42NTI2NFYwLjMzMjAzMUgxMTQuNzg5VjMuNjUyNjRIOTkuNzQzNloiIGZpbGw9IiM5N0NBNkYiLz48cGF0aCBkPSJNOTkuNzIwNyAyMC44Mzk2VjE3LjQ2MThIMTE0LjgyNFYyMC4zMDE1QzExNC44MjQgMjAuNDMzNyAxMTQuODAzIDIwLjU3MjYgMTE0Ljc4NCAyMC43MDhDMTE0Ljc3OCAyMC43NDg1IDExNC43NzIgMjAuNzg4NiAxMTQuNzY3IDIwLjgyODJIOTkuNzMyMkw5OS43MjA3IDIwLjgzOTZaIiBmaWxsPSIjOTdDQTZGIi8+PHBhdGggZD0iTTk5LjgxMjQgOC44OTY4OVYxMi4yMDYxSDExNC43ODlWOC44OTY4OUg5OS44MTI0WiIgZmlsbD0iIzk3Q0E2RiIvPjwvc3ZnPgo=" alt="Caylent" height="24" style="display:block">
+  <nav class="nav-links">
+    <a href="#s1" data-s="0">Overview</a>
+    <a href="#s3" data-s="2">Framework</a>
+    <a href="#s4" data-s="3">Layers</a>
+    <a href="#s6" data-s="5">90 Days</a>
+    <a href="#s7" data-s="6">Impact</a>
+  </nav>
+</div>
+
+<!-- DOTS -->
+<div id="dots"></div>
+<div id="counter">01 / 08</div>
+
+<!-- ══ S1: HERO ══ -->
+<section id="s1" style="background:var(--bg)">
+  <div class="glow"></div>
+  <div class="ani">
+    <div class="badge">People × AI Program · Caylent</div>
+    <h1>From prompts<br>to <span style="color:var(--green)">real impact.</span></h1>
+    <p style="max-width:520px;margin-top:22px;font-size:18px;font-weight:200;color:rgba(255,255,255,.7)">A 90-day capability program that changes how the People team works — not a training, a working system.</p>
+    <div style="margin-top:40px;display:flex;align-items:center;gap:32px">
+      <div style="font-size:13px;color:var(--muted);font-weight:300">Four capability layers &nbsp;·&nbsp; Core group leads &nbsp;·&nbsp; Full team follows</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S2: WHY NOW ══ -->
+<section id="s2" style="background:var(--bg2)" class="grid-bg">
+  <div class="glow-center"></div>
+  <div style="max-width:780px;margin:0 auto;text-align:center;position:relative;z-index:1" class="ani">
+    <div class="eyebrow" style="justify-content:center">Why this matters now</div>
+    <h2 style="font-size:clamp(30px,4.5vw,58px);font-weight:200;line-height:1.05">Expectations are higher.<br><span style="color:var(--green)">Headcount isn't growing at the same speed.</span></h2>
+    <p style="margin-top:28px;font-size:17px;font-weight:200;max-width:640px;margin-left:auto;margin-right:auto;color:rgba(255,255,255,.65)">More complexity. More data. More decisions — in real time. AI doesn't replace the People team. It amplifies what we already do, where it actually matters.</p>
+    <div style="margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:680px;margin-left:auto;margin-right:auto">
+      <div style="background:var(--bg3);padding:24px 20px;text-align:left">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:8px">Complexity</div>
+        <div style="font-size:14px;font-weight:300;color:rgba(255,255,255,.7);line-height:1.6">More decisions, more data, faster cycles — with the same team size</div>
+      </div>
+      <div style="background:var(--bg3);padding:24px 20px;text-align:left">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:8px">Expectations</div>
+        <div style="font-size:14px;font-weight:300;color:rgba(255,255,255,.7);line-height:1.6">People want more personalized, more human, more seamless experiences</div>
+      </div>
+      <div style="background:var(--bg3);padding:24px 20px;text-align:left">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:8px">Opportunity</div>
+        <div style="font-size:14px;font-weight:300;color:rgba(255,255,255,.7);line-height:1.6">AI makes it possible to do more with the team we already have</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S3: 4D FRAMEWORK ══ -->
+<section id="s3" style="background:var(--bg)">
+  <div class="ani">
+    <div class="mono">AI Fluency Framework</div>
+    <h2>Four competencies.<br>One <span style="color:var(--green)">shared language.</span></h2>
+    <p style="max-width:540px;margin-top:12px;margin-bottom:32px">Before using any tool, the team builds a shared foundation. The 4D Framework defines how to interact with AI effectively, efficiently, ethically and safely.</p>
+    <div class="cards cards-4" style="margin-bottom:24px">
+      <div class="card ani" style="animation-delay:.05s">
+        <div class="card-num">D</div>
+        <h3>Delegation</h3>
+        <p>Setting goals and deciding whether, when and how to engage with AI. Knowing what to hand off — and what to own.</p>
+      </div>
+      <div class="card ani" style="animation-delay:.1s">
+        <div class="card-num">D</div>
+        <h3>Description</h3>
+        <p>Effectively describing goals to prompt useful AI behaviors and outputs. The craft of giving good instructions.</p>
+      </div>
+      <div class="card ani" style="animation-delay:.15s">
+        <div class="card-num">D</div>
+        <h3>Discernment</h3>
+        <p>Accurately assessing the usefulness of AI outputs and behaviors. Knowing when to trust, edit, or discard.</p>
+      </div>
+      <div class="card ani" style="animation-delay:.2s">
+        <div class="card-num">D</div>
+        <h3>Diligence</h3>
+        <p>Taking responsibility for what we do with AI and how we do it. Owning the output — always.</p>
+      </div>
+    </div>
+    <div class="modes">
+      <div class="mode">
+        <div class="mode-tag">Mode 01</div>
+        <h3>Automation</h3>
+        <p>AI executes specific tasks based on human instructions. You define the rules, AI does the work.</p>
+      </div>
+      <div class="mode">
+        <div class="mode-tag">Mode 02</div>
+        <h3>Augmentation</h3>
+        <p>Humans and AI collaborate as thinking partners. Back-and-forth that makes both better.</p>
+      </div>
+      <div class="mode">
+        <div class="mode-tag">Mode 03</div>
+        <h3>Agency</h3>
+        <p>Humans configure AI to independently perform future tasks on their behalf. AI acts, you review.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S4: 4 LAYERS ══ -->
+<section id="s4" style="background:var(--bg2)">
+  <div class="ani">
+    <div class="eyebrow">How it works</div>
+    <h2>Four layers. <span style="color:var(--green)">One direction.</span></h2>
+    <p style="max-width:520px;margin-top:10px;margin-bottom:32px">Not about learning AI. About changing how we work — one layer at a time, compounding as we go.</p>
+    <div class="layers">
+      <div class="layer">
+        <div class="layer-arrow">&#9654;</div>
+        <div class="layer-n">01 · Use</div>
+        <h3>Prompt &amp; draft</h3>
+        <p>Ask Claude to write, summarize, improve, analyze. Real tasks, real drafts — from day one.</p>
+        <div class="layer-pills">
+          <span class="pill">Claude.ai</span>
+          <span class="pill">Projects</span>
+          <span class="pill">Prompt library</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-arrow">&#9654;</div>
+        <div class="layer-n">02 · Build</div>
+        <h3>Artifacts &amp; tools</h3>
+        <p>Create things that live beyond one conversation — trackers, calculators, report generators.</p>
+        <div class="layer-pills">
+          <span class="pill">Artifacts</span>
+          <span class="pill">Claude in Excel</span>
+          <span class="pill">Skills</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-arrow">&#9654;</div>
+        <div class="layer-n">03 · Automate</div>
+        <h3>Workflow automation</h3>
+        <p>Repetitive processes run without touching them. Files move, data gets processed, reports generate.</p>
+        <div class="layer-pills">
+          <span class="pill">Cowork</span>
+          <span class="pill">Claude in Chrome</span>
+          <span class="pill">Batch flows</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-n">04 · Integrate</div>
+        <h3>Connected systems</h3>
+        <p>Claude talks to your actual tools — ATS, HRIS, Google Drive, Slack. Real data in, real outputs out.</p>
+        <div class="layer-pills">
+          <span class="pill">API</span>
+          <span class="pill">Claude Code</span>
+          <span class="pill">MCP connectors</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px">
+      <strong>The progression rule:</strong> Core group always runs one layer ahead of the full team. Proof pulls people forward faster than any training.
+    </div>
+  </div>
+</section>
+
+<!-- ══ S5: CORE GROUP ══ -->
+<section id="s5" style="background:var(--bg)">
+  <div class="split ani">
+    <div>
+      <div class="mono">The engine</div>
+      <h2>Core group.<br><span style="color:var(--green)">Three roles.</span><br>One multiplier.</h2>
+      <p style="margin-top:20px;max-width:420px">This only works because of a small group who runs ahead of the team, learns first, and brings real results back — not demos, not slides.</p>
+    </div>
+    <div>
+      <div class="principle">
+        <div class="p-num">01</div>
+        <div>
+          <div class="p-title">Builders</div>
+          <div class="p-body">They turn real People team problems into working AI workflows. No hypotheticals — actual tasks, actual output.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="p-num">02</div>
+        <div>
+          <div class="p-title">Ambassadors</div>
+          <div class="p-body">They represent their functions — HRBPs, Talent, Ops, L&amp;D — and bring use cases from the front line.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="p-num">03</div>
+        <div>
+          <div class="p-title">Multipliers</div>
+          <div class="p-body">They take what works back to their teams. What scales isn't the tool — it's the proof that it works.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S6: 90 DAYS ══ -->
+<section id="s6" style="background:var(--bg2)" class="grid-bg">
+  <div class="ani">
+    <div class="eyebrow">The first 90 days</div>
+    <h2>Focused. Measurable. <span style="color:var(--green)">Real.</span></h2>
+    <p style="margin-top:10px;margin-bottom:28px;max-width:540px">We stay narrow in the first quarter — three workflows, one shared library, weekly execution. Depth over breadth.</p>
+    <div class="timeline">
+      <div class="tblock">
+        <div class="tblock-label">Month 1 — Everyone</div>
+        <div class="tblock-item"><strong>Layer 1 non-negotiable</strong>Every team member uses Claude for at least 2 real tasks</div>
+        <div class="tblock-item"><strong>Prompt library started</strong>Document what works — and what doesn't</div>
+        <div class="tblock-item"><strong>Core group identified</strong>Named, committed, one layer ahead from day one</div>
+        <div class="tblock-item"><strong>First workflows</strong>Job descriptions, meeting prep, reporting</div>
+      </div>
+      <div class="tblock">
+        <div class="tblock-label">Month 2 — Build</div>
+        <div class="tblock-item"><strong>Core group: Layer 2</strong>First artifacts shipped — trackers, templates, generators</div>
+        <div class="tblock-item"><strong>Full team: consistent use</strong>Standardized prompts across functions</div>
+        <div class="tblock-item"><strong>3+ shared artifacts</strong>Built by core group, used by the team</div>
+        <div class="tblock-item"><strong>Results shared weekly</strong>Real numbers, not demos</div>
+      </div>
+      <div class="tblock">
+        <div class="tblock-label">Month 3 — Scale</div>
+        <div class="tblock-item"><strong>Core group: Layer 3</strong>First Cowork automation running end-to-end</div>
+        <div class="tblock-item"><strong>Full team: Layer 2</strong>Building their own artifacts</div>
+        <div class="tblock-item"><strong>Leadership review</strong>Impact measured, tied to revenue per headcount</div>
+        <div class="tblock-item"><strong>Power users: Layer 4</strong>Integrations with ATS, HRIS, Slack</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S7: WHAT WE TRACK ══ -->
+<section id="s7" style="background:var(--bg)">
+  <div class="ani" style="width:100%">
+    <div class="mono">Impact metrics</div>
+    <h2>We measure it.<br><span style="color:var(--green)">All of it.</span></h2>
+    <p style="max-width:520px;margin-top:10px;margin-bottom:36px">Done at 90 days isn't a feeling — it's a number. Hours saved, capacity created, tied directly to revenue per headcount.</p>
+    <div class="stats stats-4" style="margin-bottom:28px">
+      <div class="stat">
+        <div class="stat-n">2+</div>
+        <div class="stat-l">Tasks per person using AI regularly</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">3+</div>
+        <div class="stat-l">Shared artifacts built and in use</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">1</div>
+        <div class="stat-l">Workflow fully automated end-to-end</div>
+      </div>
+      <div class="stat" style="background:rgba(151,202,111,.08);border:1px solid rgba(151,202,111,.2)">
+        <div class="stat-n" style="font-size:clamp(22px,3vw,36px);margin-top:4px">Revenue<br>per head</div>
+        <div class="stat-l" style="color:var(--green)">The business metric that ties it all together</div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>The only number that matters:</strong> hours saved, converted to capacity created, tied to revenue per headcount. That's how People work connects directly to business performance.
+    </div>
+  </div>
+</section>
+
+<!-- ══ S8: PRINCIPLES + CTA ══ -->
+<section id="s8" style="background:var(--bg2)">
+  <div class="split ani">
+    <div>
+      <div class="eyebrow">How we run it</div>
+      <h2>The rules that<br><span style="color:var(--green)">make it work.</span></h2>
+      <p style="margin-top:16px;max-width:360px">Three principles. None of them are optional. Together they're why this scales when most programs don't.</p>
+      <div style="margin-top:40px;display:flex;gap:16px;flex-wrap:wrap">
+        <a href="https://caylent.com/generative-ai" target="_blank" class="btn-primary">Explore AI Practice</a>
+        <a href="https://caylent.com/contact" target="_blank" class="btn-sec">Talk to our team</a>
+      </div>
+    </div>
+    <div>
+      <div class="principle">
+        <div class="p-num">01</div>
+        <div>
+          <div class="p-title">Core group runs one step ahead</div>
+          <div class="p-body">Always. Without exception. They experience each layer before the team touches it — so they can guide with authority, not theory.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="p-num">02</div>
+        <div>
+          <div class="p-title">Proof over training</div>
+          <div class="p-body">Real results — hours saved, tasks automated, a report that used to take four hours and now takes twenty minutes — pull people forward faster than any workshop.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="p-num">03</div>
+        <div>
+          <div class="p-title">No extra meetings</div>
+          <div class="p-body">This lives inside the work, not alongside it. Every workflow we build replaces something that already existed. Zero overhead added.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#0a0a0a;padding:24px clamp(24px,8vw,120px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;border-top:1px solid rgba(151,202,111,0.1);scroll-snap-align:none">
+  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTY4IiBoZWlnaHQ9IjIxIiB2aWV3Qm94PSIwIDAgMTY4IDIxIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik0xMjQuMzI4IDIwLjg0MDFDMTI0LjMyOCAxOS4zNTE2IDEyNC4zMjggMTcuODUxNiAxMjQuMzI4IDE2LjM2M0MxMjQuMzI4IDExLjE4NzUgMTI0LjMyOCA2LjAxMTg5IDEyNC4zMjggMC44MzYzMTRWMC4yOTgxNDZDMTI1LjE2NCAwLjI5ODE0NiAxMjUuOTU0IDAuMzU1Mzk4IDEyNi43NDQgMC4yODY2OTZDMTI3LjUgMC4yMTc5OTMgMTI3Ljk0NiAwLjQ5MjgwMiAxMjguNDA0IDEuMDg4MjJDMTMxLjk2NiA1LjcwMjczIDEzNS41NzIgMTAuMjk0MyAxMzkuMTY4IDE0Ljg5NzRDMTM5LjI1OSAxNS4wMTE5IDEzOS4zNjIgMTUuMTM3OCAxMzkuNTIzIDE1LjMzMjVWMC4zMjEwNDdIMTQyLjg3OEMxNDIuODc4IDAuNDI0MSAxNDIuOTEyIDAuNTM4NjA0IDE0Mi45MTIgMC42NDE2NTdDMTQyLjkxMiA3LjI5NDMzIDE0Mi45MTIgMTMuOTQ3IDE0Mi45MTIgMjAuNTk5N0MxNDIuOTEyIDIwLjY3OTggMTQyLjkxMiAyMC43NzE0IDE0Mi45MTIgMjAuODUxNkMxNDEuNzY3IDIwLjg1MTYgMTQwLjYxMSAyMC44NTE2IDEzOS40NjYgMjAuODUxNkMxMzkuNDIgMjAuNzgyOSAxMzkuMzk3IDIwLjcwMjcgMTM5LjM0IDIwLjY0NTVDMTM1LjU1IDE1Ljc5MDUgMTMxLjc1OSAxMC45NDcgMTI3Ljk2OSA2LjEwMzQ5QzEyNy45MDEgNi4wMjMzNCAxMjcuODMyIDUuOTU0NjQgMTI3LjcwNiA1LjgwNTc4VjIwLjg2M0gxMjQuMzUxTDEyNC4zMjggMjAuODQwMVoiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNMjUuNjI1IDIwLjgzOTNDMjUuOTY4NSAyMC4wMzc4IDI2LjMxMiAxOS4yMjQ4IDI2LjY2NyAxOC40MjMzQzI5LjI4OTEgMTIuNTE0OSAzMS45MjI3IDYuNjE3OTMgMzQuNTQ0OCAwLjcwOTUzM0MzNC42ODIzIDAuNDAwMzcyIDM0Ljg0MjYgMC4yNzQ0MTggMzUuMTk3NSAwLjI4NTg2OUMzNi4wNjc3IDAuMzA4NzY5IDM2LjkzOCAwLjI5NzMxOSAzNy43OTY4IDAuMjg1ODY5QzM4LjA0ODcgMC4yODU4NjkgMzguMTk3NSAwLjM0MzEyIDM4LjMxMiAwLjU5NTAyOUM0MS4yNjYyIDcuMjU5MTUgNDQuMjMxOSAxMy45MTE4IDQ3LjE5NzUgMjAuNTY0NUM0Ny4yMzE5IDIwLjY1NjEgNDcuMjY2MiAyMC43NDc3IDQ3LjMwMDYgMjAuODM5M0g0My42MDIxQzQzLjU0NDggMjAuNzEzMyA0My40NzYxIDIwLjU4NzQgNDMuNDMwMyAyMC40NjE0QzQxLjE4NjEgMTUuNDM0NyAzOC45NTMyIDEwLjQwOCAzNi43MDkgNS4zODEyOUMzNi42NDAzIDUuMjIwOTggMzYuNTYwMSA1LjA3MjEzIDM2LjQ0NTYgNC44MzE2N0MzNS4wOTQ1IDcuODY2MDIgMzMuNzg5MSAxMC44MDg4IDMyLjQ0OTQgMTMuNzk3M0gzMi45MzAzQzM0LjE2NyAxMy43OTczIDM1LjM5MjIgMTMuNzk3MyAzNi42Mjg4IDEzLjc5NzNDMzYuODkyMiAxMy43OTczIDM3LjAyOTYgMTMuODY2IDM3LjEzMjYgMTQuMTE3OUMzNy41MTA1IDE0Ljk5OTYgMzcuOTExMyAxNS44ODEzIDM4LjMwMDYgMTYuNzUxNUMzOC4zNDY0IDE2Ljg2NiAzOC4zODA3IDE2Ljk4MDUgMzguNDM4IDE3LjE0MDhDMzguMjMxOSAxNy4xNDA4IDM4LjA4MyAxNy4xNDA4IDM3LjkzNDIgMTcuMTQwOEMzNS43MzU3IDE3LjE0MDggMzMuNTM3MiAxNy4xNDA4IDMxLjMzODcgMTcuMTQwOEMzMS4wNjM5IDE3LjE0MDggMzAuOTI2NSAxNy4yMjEgMzAuODEyIDE3LjQ4NDNDMzAuMzMxMSAxOC42MDY1IDI5LjgyNzMgMTkuNzI4NiAyOS4zMjM1IDIwLjgzOTNIMjUuNjI1WiIgZmlsbD0iI0ZGRkZGRiIvPjxwYXRoIGQ9Ik0wIDkuNDU4NTZDMC4xMTQ1MDQgOC45MDg5NCAwLjE5NDY1NiA4LjM1OTMyIDAuMzMyMDYxIDcuODIxMTZDMi4yNTU3MyAwLjIyOTU1MyAxMS43MDIzIC0yLjU3NTc5IDE3LjQ3MzMgMi43MzcxOUMxNy41NzYzIDIuODI4NzkgMTcuNjkwOCAyLjkwODk0IDE3Ljc5MzkgMi45ODkxQzE2Ljk1OCAzLjgxMzUyIDE2LjE1NjUgNC41OTIxNSAxNS4zMzIxIDUuMzkzNjhDMTMuNzI5IDMuODgyMjIgMTEuNzU5NSAzLjE4Mzc1IDkuNDkyMzcgMy40NzAwMUM3LjY2MDMxIDMuNjk5MDIgNi4xNjAzMSA0LjU2OTI1IDQuOTkyMzcgNS45ODkxQzIuNzAyMjkgOC43ODI5OSAyLjkxOTg1IDEyLjgwMjEgNS40Mzg5MyAxNS4zNjdDNy45NDY1NyAxNy45MDg5IDEyLjMzMjEgMTguMzMyNiAxNS4zNDM1IDE1LjQ1ODZDMTYuMTMzNiAxNi4yMzcyIDE2LjkyMzcgMTcuMDE1OCAxNy43OTM5IDE3Ljg3NDZDMTcuNjY3OSAxNy45Nzc2IDE3LjQ5NjIgMTguMDkyMSAxNy4zNDczIDE4LjIyOTZDMTUuNjk4NSAxOS42NjA5IDEzLjc5NzcgMjAuNTMxMSAxMS42MjIxIDIwLjc4M0MxMS41MzA1IDIwLjc4MyAxMS40Mzg5IDIwLjgyODggMTEuMzM1OSAyMC44NTE3SDkuNDkyMzdDOS40MDA3NiAyMC44Mjg4IDkuMzA5MTYgMjAuNzk0NCA5LjIxNzU2IDIwLjc4M0M0Ljg3Nzg2IDIwLjI1NjMgMS4zNzQwNSAxNy4xNzYxIDAuMzIwNjExIDEyLjk1MDlDMC4xOTQ2NTYgMTIuNDM1NyAwLjExNDUwNCAxMS45MjA0IDAuMDExNDUwNCAxMS40MDUxQzAuMDExNDUwNCAxMC43NjM5IDAuMDExNDUwNCAxMC4xMjI3IDAuMDExNDUwNCA5LjQ4MTQ2TDAgOS40NTg1NloiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNNTguNDY1NiAyMC44Mzk4QzU4LjQ0MjcgMjAuNjc5NSA1OC40MDg0IDIwLjUxOTIgNTguNDA4NCAyMC4zNDc1QzU4LjQwODQgMTguNjY0MyA1OC40MDg0IDE2Ljk2OTYgNTguNDA4NCAxNS4yODY0QzU4LjQwODQgMTUuMDU3NCA1OC4zNTExIDE0LjgxNjkgNTguMjU5NSAxNC42MTA4QzU2LjIyMTQgMTAuMDE5MiA1NC4xNzE3IDUuNDE2MTcgNTIuMTIyMSAwLjgyNDU2OUM1Mi4wNTM0IDAuNjc1NzE0IDUxLjk5NjIgMC41MTU0MDkgNTEuOTE2IDAuMzIwNzUyQzUyLjA4NzggMC4zMjA3NTIgNTIuMjEzNyAwLjI5Nzg1MiA1Mi4zNTExIDAuMjk3ODUyQzUzLjMwMTUgMC4yOTc4NTIgNTQuMjUxOSAwLjMwOTMwMiA1NS4yMDIzIDAuMjk3ODUyQzU1LjUxMTQgMC4yOTc4NTIgNTUuNjcxNyAwLjQwMDkwNSA1NS43OTc3IDAuNjg3MTY1QzU3LjE2MDMgMy43NjczMiA1OC41MzQzIDYuODQ3NDcgNTkuOTA4NCA5LjkyNzYyQzU5Ljk2NTYgMTAuMDY1IDYwLjAzNDMgMTAuMjAyNCA2MC4xMjU5IDEwLjM5NzFDNjAuMjA2MSAxMC4yMTM5IDYwLjI3NDggMTAuMDg3OSA2MC4zMzIgOS45NTA1MkM2MS43MDYxIDYuODcwMzcgNjMuMDgwMSAzLjc5MDIyIDY0LjQ0MjcgMC43MTAwNjVDNjQuNTgwMSAwLjQxMjM1NSA2NC43MjkgMC4yOTc4NTIgNjUuMDYxMSAwLjMwOTMwMkM2NiAwLjMzMjIwMyA2Ni45Mzg5IDAuMzA5MzAyIDY3Ljg3NzggMC4zMDkzMDJDNjguMDE1MyAwLjMwOTMwMiA2OC4xNDEyIDAuMzA5MzAyIDY4LjM0NzMgMC4zMDkzMDJDNjguMTUyNyAwLjc0NDQxNiA2Ny45OTI0IDEuMTEwODMgNjcuODMyIDEuNDc3MjRDNjUuODg1NSA1Ljg1MTI5IDYzLjkyNzUgMTAuMjM2OCA2MS45OTI0IDE0LjYxMDhDNjEuODg5MyAxNC44Mjg0IDYxLjg0MzUgMTUuMDkxNyA2MS44MzIgMTUuMzMyMkM2MS44MzIgMTcuMTc1NyA2MS44MzIgMTkuMDA3OCA2MS44MzIgMjAuODUxM0g1OC40NzcxTDU4LjQ2NTYgMjAuODM5OFoiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNMTU4LjUyIDIwLjgzOTdDMTU4LjUyIDE3LjgxNjggMTU4LjUyIDE0Ljc5MzkgMTU4LjUyIDExLjc1OTVDMTU4LjUyIDkuMjQwNDMgMTU4LjUyIDYuNzA5ODkgMTU4LjUyIDQuMTkwODFDMTU4LjUyIDQuMDQxOTUgMTU4LjUyIDMuODkzMSAxNTguNTIgMy42ODY5OUgxNTIuNDM5VjAuMzMyMDMxSDE2OC4wMDFWMy42NzU1NEgxNjEuOTA5VjQuMjQ4MDZDMTYxLjkwOSA5LjU4Mzk0IDE2MS45MDkgMTQuOTMxMyAxNjEuOTA5IDIwLjI2NzFDMTYxLjkwOSAyMC40NjE4IDE2MS44OTcgMjAuNjU2NSAxNjEuODg2IDIwLjg1MTFIMTU4LjUzMUwxNTguNTIgMjAuODM5N1oiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNNzcuMTE4MSAyMC44Mzk0Qzc3LjA5NTIgMjAuNjc5MSA3Ny4wNzIzIDIwLjUwNzMgNzcuMDcyMyAyMC4zNDdDNzcuMDcyMyAxMy44MzE4IDc3LjA3MjMgNy4zMTY1IDc3LjA3MjMgMC44MDEyMjhWMC4zMjAzMTJIODAuNDUwMVYxNy40MTU3SDkwLjMwODlWMjAuODUwOEg3Ny4xMTgxVjIwLjgzOTRaIiBmaWxsPSIjRkZGRkZGIi8+PHBhdGggZD0iTTk5Ljc0MzYgMy42NTI2NFYwLjMzMjAzMUgxMTQuNzg5VjMuNjUyNjRIOTkuNzQzNloiIGZpbGw9IiM5N0NBNkYiLz48cGF0aCBkPSJNOTkuNzIwNyAyMC44Mzk2VjE3LjQ2MThIMTE0LjgyNFYyMC4zMDE1QzExNC44MjQgMjAuNDMzNyAxMTQuODAzIDIwLjU3MjYgMTE0Ljc4NCAyMC43MDhDMTE0Ljc3OCAyMC43NDg1IDExNC43NzIgMjAuNzg4NiAxMTQuNzY3IDIwLjgyODJIOTkuNzMyMkw5OS43MjA3IDIwLjgzOTZaIiBmaWxsPSIjOTdDQTZGIi8+PHBhdGggZD0iTTk5LjgxMjQgOC44OTY4OVYxMi4yMDYxSDExNC43ODlWOC44OTY4OUg5OS44MTI0WiIgZmlsbD0iIzk3Q0E2RiIvPjwvc3ZnPgo=" alt="Caylent" height="24" style="display:block">
+  <span style="color:rgba(255,255,255,.3);font-size:13px;font-weight:300">© 2025 Caylent · caylent.com</span>
+</footer>
+
+<script>
+const sections=document.querySelectorAll('section[id]');
+const N=sections.length;
+const dotsEl=document.getElementById('dots');
+const counter=document.getElementById('counter');
+const navLinks=document.querySelectorAll('.nav-links a[data-s]');
+
+// build dots
+for(let i=0;i<N;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>sections[i].scrollIntoView({behavior:'smooth'});
+  dotsEl.appendChild(d);
+}
+
+// observe sections
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx=Array.from(sections).indexOf(e.target);
+      document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+      counter.textContent=String(idx+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      navLinks.forEach(a=>a.classList.toggle('active',parseInt(a.dataset.s)===idx));
+    }
+  });
+},{threshold:.5});
+sections.forEach(s=>io.observe(s));
+
+// animate in
+const aio=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');aio.unobserve(e.target)}});
+},{threshold:.15});
+document.querySelectorAll('.ani').forEach(el=>aio.observe(el));
+</script>
+</body>
+</html>
